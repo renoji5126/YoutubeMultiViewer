@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title= title
+    script(src='//code.jquery.com/jquery-2.1.1.min.js')
+    script(src='//code.jquery.com/ui/1.11.1/jquery-ui.js')
+    script(src='/javascripts/swfobject.js')
+    script(src='/javascripts/query.js')
+    script(src='/javascripts/controler.js')
+    if(edit)
+      script(src='/javascripts/edit_view.js')
+    if(view)
+      script(src='/javascripts/multi_view.js')
+      script(type='text/javascript').
+        multiView.setter(!{JSON.stringify(dbsInfo)});
+    if(list)
+      script(src='/javascripts/list.js')
+    link(rel='stylesheet', href='//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    div
+      a(href='/') index
+      a(href='/list') list
+    block content

@@ -1,0 +1,43 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+select{
+  position: fixed;
+  right: 0px;
+  top: 10px;
+  height: 90%;
+  min-height:200px;
+  width: 10%;
+}
+.add_sectionPoint{
+  position: fixed;
+  right: 10%;
+  top: 10px;
+  height: calc(70% - 20px);
+  min-height:100px;
+  width: 5%;
+}
+.del_sectionPoint{
+  position: fixed;
+  right: 10%;
+  top: 70%;
+  height: calc(30% - 40px);
+  min-height:60px;
+  width: 5%;
+}
+
+.controler{
+  position: fixed;
+  bottom: 0px;
+  text-align: center;
+  min-height: 40px;
+  width: 90%;
+  min-width: 100px;
+}
+
