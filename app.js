@@ -4,6 +4,7 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var conf = require('config');
 //var MongoStore = require('connect-mongo')(express);
 
 var routes = require('./routes/index');
@@ -12,7 +13,8 @@ var multi_view = require('./routes/multi_view');
 var edit = require('./routes/edit');
 var users = require('./routes/users');
 var mongoose = require('mongoose');
-var url = 'mongodb://localhost/test';
+var url = 'mongodb://' + conf.mongodbInfo.url + '/' + conf.mongodbInfo.dbName;
+console.log(url);
 mongoose.connect(url, function(err){
   if (err) throw err;
 });

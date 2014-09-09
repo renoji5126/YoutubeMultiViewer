@@ -1,0 +1,7 @@
+{
+  "mongodbInfo":{
+    "url":"localhost",
+    "dbName": "test",
+    "modelName":"sampleColle"
+  }
+}
