@@ -2,7 +2,6 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
   form(method='POST',action='/list')
     input(type='text',name='youtubeURL',value='',placeholder='youtubeの対象の動画URLを貼り付けて下さい')
     input(type='submit',value='登録')

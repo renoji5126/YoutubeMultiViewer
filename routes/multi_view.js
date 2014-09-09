@@ -14,20 +14,46 @@ router.get('/', function(req, res) {
     //select文生成
     movieIds.push({moveId: value });
   });
-  sampleModel.find({ $or : movieIds  },{ _id:0, moveId:1, sectionEndPoints:1},function(err, docs){
+  sampleModel.find({ $or : movieIds  },{ _id:0, moveId:1, sectionEndPoints:1, sectionDiffrents:1},function(err, docs){
     if(err) throw err;
-    //if(err) console.log( err ); res.send('sorry false'); 
-    var sectionEndPoints = [];
+    //if(err) console.log( err ); res.send('sorry false');
+    //console.log(docs);
+    var result = [];
+    var sectionDiffrentLengthMin = docs[0].sectionDiffrents.length;
     var sectionMax = [];
-    docs.forEach(function(db_value, db_index){
-      //TODO
-      db_value.difference = [];
-      db_value.sectionEndPoints.forEach(function(value, index){
-        var deff = value;
-        db_value.difference.push(deff);
+    if(docs.length > 1){
+      for(n = 1; n < docs.length ; n++){
+        sectionDiffrentLengthMin = docs[n].sectionDiffrents.length < sectionDiffrentLengthMin ? docs[n].sectionDiffrents.length : sectionDiffrentLengthMin;
+      }
+      for(i = 0; i < sectionDiffrentLengthMin; i++){
+        var tmp = 0;
+        for(l = 0; l < docs.length; l++){
+          tmp = docs[l].sectionDiffrents[i] > tmp ? docs[l].sectionDiffrents[i] : tmp;
+        }
+        sectionMax.push(tmp);
+      }
+      docs.forEach(function(docs_value, docs_index){
+        var pauseTimes = [];
+        sectionMax.forEach(function(max, maxindex){
+          var diff = max - docs_value.sectionDiffrents[maxindex];
+          pauseTimes.push(diff);
+          if(sectionMax.length - 1 == maxindex){
+            //TODO なぜかpauseTimesが構造体に入らない
+            docs_value.pauseTimes = pauseTimes;
+            result.push(docs_value);
+            console.log(docs_value.pauseTimes);
+          }
+        });
+        if(docs.length - 1 == docs_index){
+          console.log(result);
+          res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :result });
+        }
       });
-    });
-    res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :docs});
+    }else{
+      result = docs;
+      result[0].pauseTime = [];
+      res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :result });
+    }
   });
 });
 

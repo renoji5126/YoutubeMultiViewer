@@ -34,15 +34,19 @@ router.post('/delete', function(req,res){
       if(err) throw err;
       //console.log(docs, movieId);
       res.redirect('/list');
-      //if(docs != 0) {res.send( docs + ' : ' + movieId + ' delete success!');return true;}
-      //else{ res.send( docs + ' : ' + movieId + ' delete false.........'); return false;}
     });
 });
 router.post('/', function(req,res){
-  //console.log(JSON.parse(req.body.json));
   if(!req.body.json) {res.redirect('/list');}
   var jsondata = JSON.parse(req.body.json);
   jsondata.sectionEndPoints = jsondata.sectionEndPoints.sort(asc);
+  if(jsondata.sectionEndPoints.length > 1){
+    jsondata.sectionDiffrents = [];
+    jsondata.sectionEndPoints.forEach(function(value, index){
+      if( jsondata.sectionEndPoints.length - 1 == index){return false;}
+      jsondata.sectionDiffrents.push(jsondata.sectionEndPoints[index + 1] - jsondata.sectionEndPoints[index]);
+    });
+  }
   console.log(jsondata);
   sampleModel.find({moveId: jsondata.moveId ,deleteFlg: { $ne : true }},function(err, docs){
     if(err) throw err;
@@ -50,7 +54,8 @@ router.post('/', function(req,res){
       sampleModel.update(
         {moveId: jsondata.moveId ,deleteFlg: { $ne : true }},
         {$set :{
-          sectionEndPoints : jsondata.sectionEndPoints
+          sectionEndPoints : jsondata.sectionEndPoints,
+          sectionDiffrents : jsondata.sectionDiffrents,
         }},
         {upsert: false, multi: true} ,
         function(err){

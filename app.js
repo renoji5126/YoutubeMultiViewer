@@ -20,15 +20,16 @@ mongoose.connect(url, function(err){
 });
 var sampleCollect = new mongoose.Schema({
   moveId: String,
-  sectionEndPoints: Array,
+  sectionEndPoints: {type:Array, default:[]},
+  sectionDiffrents: {type:Array, default:[]},
   deleteFlg: {type : Boolean, default: false},
-},{collection:'sample_coll'});
-var sampleModel = mongoose.model('test',sampleCollect);
+},{collection: conf.mongodbInfo.collectionName });
+var sampleModel = mongoose.model(conf.mongodbInfo.dbName, sampleCollect);
 edit.setModel(sampleModel);
 movie_list.setModel(sampleModel);
 multi_view.setModel(sampleModel);
 var app = express();
-
+var date_obj = new Date();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -38,11 +39,11 @@ app.use(favicon());
 app.use(function(req, res, next){
   console.log([
     req.headers['x-forwarded-for'] || req.client.remoteAddress,
-    new Date().toLocaleString(),
+    date_obj.toLocaleString(),
     req.method,
     req.url,
     res.statusCode,
-    req.headers.referer || '-'
+    req.headers.referer
     ].join('\t')
   );
   next();

@@ -41,3 +41,6 @@ select{
   min-width: 100px;
 }
 
+.link a{
+  padding: 10px;
+}

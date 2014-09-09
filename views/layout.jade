@@ -1,5 +1,5 @@
 doctype html
-html
+html(lang='ja')
   head
     title= title
     script(src='//code.jquery.com/jquery-2.1.1.min.js')
@@ -18,7 +18,7 @@ html
     link(rel='stylesheet', href='//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    div
+    div.link
       a(href='/') index
       a(href='/list') list
     block content
