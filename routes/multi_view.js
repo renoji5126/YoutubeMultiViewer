@@ -43,21 +43,21 @@ router.get('/', function(req, res) {
           var diff = max - docs_value.sectionDiffrents[maxindex];
           tmp.pauseTimes.push(diff);
           if(sectionMax.length - 1 == maxindex){
-            //TODO なぜかpauseTimesが構造体に入らない
-            console.log(JSON.stringify(tmp));
-            console.log(tmp.pauseTimes);
             result.push(tmp);
-            //console.log(docs_value.pauseTimes);
           }
         });
         if(docs.length - 1 == docs_index){
-          console.log(JSON.stringify(result));
           res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :result });
         }
       });
     }else{
-      result = docs;
-      result[0].pauseTime = [];
+      var tmp = {
+        moveId: docs[0].moveId,
+        sectionDiffrents: docs[0].sectionDiffrents,
+        sectionEndPoints: docs[0].sectionEndPoints,
+        pauseTimes: [],
+      };
+      result.push(tmp);
       res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :result });
     }
   });
