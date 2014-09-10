@@ -1,6 +1,7 @@
 var controler = {};
 controler.playerList=[];
-
+controler.currentPoint = 0;
+controler.playingInterval = null;
 controler.setPlayer = function(player){
   controler.playerList.push(player);
 }
@@ -29,6 +30,8 @@ controler.create = function(){
   });
   $controler.children('.start').button({icons:{primary:"ui-icon-play"},text:false}).click(function(){
     //console.log(  this.getCurrentTime());
+    var playing_interval = setInterval(function(){
+    },1000);
     $.each(controler.playerList, function(){
       this.playVideo();
     });
@@ -52,5 +55,19 @@ controler.create = function(){
     $.each(controler.playerList, function(){
       this.pauseVideo();
     });
+  });
+}
+
+controler.loadMap = function(){
+  controler.playerList.forEach(function(player, player_index){
+    for(i = controler.currentPoint; i < multiView.list[player_index].sectionDiffrents.length;i++ ){
+      player.seekTo(multiView.list[player_index].sectionEndPoints[i] / 1000);
+      setTimeout(function(){
+        player.pauseVideo();
+        setTimeout(function(){
+          player.playVideo();
+        },multiView.list[player_index].pauseTimes[i]);
+      },multiView.list[player_index].sectionDiffrents[i]);
+    }
   });
 }
