@@ -33,19 +33,25 @@ router.get('/', function(req, res) {
         sectionMax.push(tmp);
       }
       docs.forEach(function(docs_value, docs_index){
-        var pauseTimes = [];
+        var tmp = {
+          moveId: docs_value.moveId,
+          sectionDiffrents: docs_value.sectionDiffrents,
+          sectionEndPoints: docs_value.sectionEndPoints,
+          pauseTimes: [],
+        };
         sectionMax.forEach(function(max, maxindex){
           var diff = max - docs_value.sectionDiffrents[maxindex];
-          pauseTimes.push(diff);
+          tmp.pauseTimes.push(diff);
           if(sectionMax.length - 1 == maxindex){
             //TODO なぜかpauseTimesが構造体に入らない
-            docs_value.pauseTimes = pauseTimes;
-            result.push(docs_value);
-            console.log(docs_value.pauseTimes);
+            console.log(JSON.stringify(tmp));
+            console.log(tmp.pauseTimes);
+            result.push(tmp);
+            //console.log(docs_value.pauseTimes);
           }
         });
         if(docs.length - 1 == docs_index){
-          console.log(result);
+          console.log(JSON.stringify(result));
           res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :result });
         }
       });
