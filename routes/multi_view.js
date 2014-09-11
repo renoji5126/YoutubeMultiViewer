@@ -16,15 +16,18 @@ router.get('/', function(req, res) {
   });
   sampleModel.find({ $or : movieIds  },{ _id:0, moveId:1, sectionEndPoints:1, sectionDiffrents:1},function(err, docs){
     if(err) throw err;
-    //if(err) console.log( err ); res.send('sorry false');
-    //console.log(docs);
     var result = [];
-    var sectionDiffrentLengthMin = docs[0].sectionDiffrents.length;
     var sectionMax = [];
-    if(docs.length > 1){
-      for(n = 1; n < docs.length ; n++){
-        sectionDiffrentLengthMin = docs[n].sectionDiffrents.length < sectionDiffrentLengthMin ? docs[n].sectionDiffrents.length : sectionDiffrentLengthMin;
+    if(docs){
+      var sectionDiffrentLengthMin = docs[0].sectionDiffrents.length;
+      for(x=0; x < docs.length; x++){
+        if(!docs[x].sectionDiffrents.length){
+          res.render('view', { title: 'YoutubeMultiViewer' ,view:true ,dbsInfo :docs });
+        }
+        sectionDiffrentLengthMin = docs[x].sectionDiffrents.length < sectionDiffrentLengthMin ? docs[x].sectionDiffrents.length : sectionDiffrentLengthMin;
       }
+    }
+    if(docs.length > 1){
       for(i = 0; i < sectionDiffrentLengthMin; i++){
         var tmp = 0;
         for(l = 0; l < docs.length; l++){
