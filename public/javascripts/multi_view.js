@@ -16,7 +16,6 @@ var renoji_name = [ "one", "two", "three", "four" ];
 var multiView = {};
 multiView.setter = function(objectList){
   multiView.list = objectList;
-  //console.log(multiView.list);
   var tmp_length = 0;
   $.each(multiView.list, function(index){
     var _self = this;
@@ -62,16 +61,15 @@ function onYouTubePlayerReady(playerId){
   $.each(multiView.sectionName, function(index){
     $('select.sectionPoints').append('<option value=' + index + '>' + this.toString() + '</option>');
   });
+  $('option[value=0]').attr('selected','');
+  $.each(controler.playerList, function(index){
+    controler.currentPoint[index] = value;
+  });
   $('select.sectionPoints').change(function(){
     var value = parseInt($(this).children('option:selected')[0].value);
     console.log(value);
-    //console.log(controler.playerList);
     $.each(controler.playerList, function(index){
-      //console.log(this);
-      var sectPt = multiView.list[index].sectionEndPoints[value] / 1000;
-      console.log(sectPt);
-      this.seekTo(sectPt,true);
-      this.pauseVideo();
+      controler.currentPoint[index] = value;
     });
   });
   

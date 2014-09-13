@@ -1,7 +1,7 @@
 var controler = {};
+var worker = [];
 controler.playerList=[];
 controler.currentPoint = [];
-woker = new Worker('/javascripts/movieWoker.js');
 controler.setPlayer = function(player){
   controler.playerList.push(player);
 }
@@ -18,35 +18,32 @@ controler.create = function(){
     //console.log(player.getCurrentTime());
     $.each(controler.playerList, function(){
       this.seekTo(0);
-      this.pauseVideo();
+      //this.pauseVideo();
     });
   });
   $controler.children('.flame_back').button({icons:{primary:"ui-icon-seek-prev"},text:false}).click(function(){
     //console.log(player.getCurrentTime());
     $.each(controler.playerList, function(){
       this.seekTo(this.getCurrentTime() - 0.06,true);
-      this.pauseVideo();
+      //this.pauseVideo();
     });
   });
   $controler.children('.start').button({icons:{primary:"ui-icon-play"},text:false}).click(function(){
     //console.log(  this.getCurrentTime());
-    var playing_interval = setInterval(function(){
-    },1000);
-    $.each(controler.playerList, function(){
-      this.playVideo();
-    });
+    controler.playWorker();
   });
   $controler.children('.stop').button({icons:{primary:"ui-icon-pause"},text:false}).click(function(){
     //console.log(  this.getCurrentTime());
-    $.each(controler.playerList, function(){
+    $.each(controler.playerList, function(index){
       this.pauseVideo();
+      worker[index].terminate();
     });
   });
   $controler.children('.flame_front').button({icons:{primary:"ui-icon-seek-next"},text:false}).click(function(){
     //console.log(  this.getCurrentTime());
     $.each(controler.playerList, function(){
       this.seekTo(  this.getCurrentTime() + 0.06 ,true);
-      this.pauseVideo();
+      //this.pauseVideo();
     });
   });
   $controler.children('.last_front').button({icons:{primary:"ui-icon-seek-end"},text:false}).click(function(){
@@ -57,56 +54,42 @@ controler.create = function(){
     });
   });
 }
-//TODO 時間差駆動をできるようにする
-controler.loadMap = function(){
+controler.playWorker = function(){
   controler.playerList.forEach(function(player, player_index){
-    for(i = controler.currentPoint; i < multiView.list[player_index].sectionDiffrents.length;i++ ){
-      player.seekTo(multiView.list[player_index].sectionEndPoints[i] / 1000);
-      setTimeout(function(){
-        player.pauseVideo();
-        setTimeout(function(){
-          player.playVideo();
-        },multiView.list[player_index].pauseTimes[i]);
-      },multiView.list[player_index].sectionDiffrents[i]);
-    }
-  });
-}
-
-controler.woker = function(){
-  //終了する場合は以下のものをよぶ
-  //woker..terminate();
-  woker.addEventListener('message',function(e){
-    var switchCase = e.data.switchCase;
-    var ctlIndex = e.data.index;
-    console.log(ctlIndex, switchCase);
-    switch(switchCase){
-      /*case 'play':
-        controler.playerList[ctlIndex].playVideo();
-        break;*/
-      case 'pause':
-        controler.playerList[ctlIndex].pauseVideo();
-        break;
-      default:
-        controler.playerList[ctlIndex].seekTo(multiView.list[ctlIndex].sectionEndPoints[controler.currentPoint] / 1000);
-        controler.currentPoint[ctlIndex]++;
-        /*woker.postMessage({
-          index: ctlIndex,
-          sectionDiffrents: multiView.list[ctlIndex].sectionEndPoints,
-          sectionPauseTime: multiView.list[ctlIndex].pauseTimes,
-          point: controler.currentPoint,
-        });*/
-        break;
-    }
-  });
-  //woker.postMessage({player: controler.playerList[0]});
-  controler.playerList.forEach(function(player, player_index){
-    controler.currentPoint[player_index] = 0;
+    worker[player_index] = new Worker('/javascripts/movieWoker.js');
+    worker[player_index].addEventListener('message',function(e){
+      var switchCase = e.data.switchCase;
+      var ctlIndex = e.data.index;
+      //console.log(ctlIndex, switchCase, controler.currentPoint[ctlIndex],controler.playerList[ctlIndex].getPlayerState());
+      switch(switchCase){
+        case 'play':
+          controler.playerList[ctlIndex].seekTo(multiView.list[ctlIndex].sectionEndPoints[controler.currentPoint[ctlIndex]] / 1000);
+          controler.playerList[ctlIndex].playVideo();
+          controler.currentPoint[ctlIndex]++;
+          $('option[value=' + controler.currentPoint[ctlIndex] + ']').attr('selected','');
+          if(controler.currentPoint[ctlIndex] == multiView.list[ctlIndex].sectionEndPoints.length){
+            //強制終了
+            console.log('worker terminated...');
+            worker[ctlIndex].terminate();
+          }
+          break;
+        case 'pause':
+          controler.playerList[ctlIndex].pauseVideo();
+          break;
+        default:
+          worker[ctlIndex].postMessage({
+            index: ctlIndex,
+            sectionDiffrents: multiView.list[ctlIndex].sectionDiffrents[controler.currentPoint[player_index]],
+            sectionPauseTime: multiView.list[ctlIndex].pauseTimes[controler.currentPoint[player_index]],
+          });
+          break;
+      }
+    });
     // woker登録
-    woker.postMessage({
+    worker[player_index].postMessage({
       index: player_index,
-      sectionDiffrents: multiView.list[player_index].sectionEndPoints,
-      sectionPauseTime: multiView.list[player_index].pauseTimes,
-      point: controler.currentPoint[player_index],
+      sectionDiffrents: multiView.list[player_index].sectionDiffrents[controler.currentPoint[player_index]],
+      sectionPauseTime: multiView.list[player_index].pauseTimes[controler.currentPoint[player_index]],
     });
   });
 }
