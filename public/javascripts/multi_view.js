@@ -63,7 +63,7 @@ function onYouTubePlayerReady(playerId){
   });
   $('option[value=0]').attr('selected','');
   $.each(controler.playerList, function(index){
-    controler.currentPoint[index] = value;
+    controler.currentPoint[index] = 0;
   });
   $('select.sectionPoints').change(function(){
     var value = parseInt($(this).children('option:selected')[0].value);
