@@ -13,7 +13,13 @@ var multi_view = require('./routes/multi_view');
 var edit = require('./routes/edit');
 var users = require('./routes/users');
 var mongoose = require('mongoose');
+if(process.env.MONGOLAB_URI){
+var url = process.env.MONGOLAB_URI;
+conf.mongodbInfo.url = url.replace('mongodb://','').split('/')[0];
+conf.mongodbInfo.dbName = url.replace('mongodb://','').split('/')[1];
+}else{
 var url = 'mongodb://' + conf.mongodbInfo.url + '/' + conf.mongodbInfo.dbName;
+}
 console.log(url);
 mongoose.connect(url, function(err){
   if (err) throw err;
